@@ -5,6 +5,11 @@
 
 body {
   padding: 10px;
+  font-family: "Roboto", sans-serif;
+}
+
+code {
+  font-family: "Source Code Pro", monospace;
 }
 
 .issue {
