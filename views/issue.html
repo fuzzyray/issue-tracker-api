@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>freeCodeCamp: Quality Assurance Projects - Issue Tracker</title>
     <meta name="description" content="freeCodeCamp: Quality Assurance Projects - Issue Tracker">
-    <link id="favicon" rel="icon" href="https://hyperdev.com/favicon-app.ico" type="image/x-icon">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +14,7 @@
 <header>
     <h1 id='projectTitle'></h1>
 </header>
-<center>
+<div class="centered">
     <div id='submitNewIssue'>
         <br>
         <h3>Submit a new issue:</h3>
@@ -34,7 +33,7 @@
     <div id='issueDisplay'></div>
 
     <hr style='margin: 50px; margin-top: 200px'>
-</center>
+</div>
 
 <script src="https://code.jquery.com/jquery-2.2.1.min.js"
         integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
@@ -42,7 +41,7 @@
 <script>
   $(function() {
     var currentProject = window.location.pathname.replace(/\//g, '');
-    ;
+
     var url = '/api/issues/' + currentProject;
     $('#projectTitle').text('All issues for: ' + currentProject);
     $.ajax({
