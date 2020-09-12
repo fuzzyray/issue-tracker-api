@@ -9,6 +9,7 @@
 'use strict';
 
 const expect = require('chai').expect;
+const createOrFindProject = require('../dbFunctions').createOrFindProject;
 
 module.exports = app => {
 
@@ -34,9 +35,18 @@ module.exports = app => {
 
       .post((req, res) => {
         const project = req.params.project;
-        console.log(project);
-        console.log(req.body);
-        res.json({error: 'Not implemented'});
+        const issue = req.body;
+        createOrFindProject(project, (err, data) => {
+          if (err) {
+            console.log(err);
+            res.json({error: err});
+          } else {
+            console.log(data);
+            issue.projectId = data._id;
+            console.log(issue);
+            res.json({error: 'Not implemented'});
+          }
+        });
       })
 
       .put((req, res) => {

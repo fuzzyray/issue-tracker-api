@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+// Connect to Mongo
+const connect = (dbURI) => {
+  mongoose.connect(dbURI,
+      {useNewUrlParser: true, useUnifiedTopology: true});
+};
+
 // Schema/Model
 const ProjectSchema = mongoose.Schema({
   name: {type: String, required: true},
@@ -13,8 +19,8 @@ const IssueSchema = new mongoose.Schema({
   issue_text: {type: String, required: true},
   created_on: {type: Date, required: true},
   created_by: {type: String, required: true},
-  open: {type: Boolean, required: true},
-  updated_on: {type: Date},
+  updated_on: {type: Date, required: true},
+  open: {type: Boolean, default: true, required: true},
   assigned_to: {type: String},
   status_text: {type: String},
 });
@@ -22,17 +28,39 @@ const IssueSchema = new mongoose.Schema({
 const Issue = mongoose.model('Issue', IssueSchema);
 
 // Create
+const createOrFindProject = (name, cb) => {
+  const newProject = new Project({name: name});
+  findProjectByName(name, (err, data) => {
+    if (err) {
+      cb(err, null);
+    } else if (data) {
+      cb(null, data);
+    } else {
+      newProject.save((err, data) => {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, data);
+        }
+      });
+    }
+  });
+};
 
 // Read
+const findProjectByName = (name, cb) => {
+  Project.find({name: name}, (err, data) => {
+    if (err) {
+      cb(err, null);
+    } else {
+      cb(null, data[0]);
+    }
+  });
+};
 
 // Update
 
 // Delete
 
-// Connect to Mongo
-const connect = (dbURI) => {
-  mongoose.connect(dbURI,
-      {useNewUrlParser: true, useUnifiedTopology: true});
-};
-
 exports.connect = connect;
+exports.createOrFindProject = createOrFindProject;
