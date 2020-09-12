@@ -10,17 +10,14 @@ const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
 
+// Connect to database
+require('./dbFunctions').connect(process.env.MONGO_URI);
+
 const app = express();
 
 // Log all requests
 app.use((req, res, next) => {
   console.log(`${Date.now()}: ${req.method} ${req.path} - ${req.ip}`);
-  console.log('  request params:');
-  Object.keys(req.params)
-      .forEach(key => console.log(`    ${key}: ${req.params[key]}`));
-  console.log('  request query:');
-  Object.keys(req.query)
-      .forEach(key => console.log(`    ${key}: ${req.query[key]}`));
   next();
 });
 
@@ -68,7 +65,7 @@ const listener = app.listen(process.env.PORT || 3000, () => {
       try {
         runner.run();
       } catch (e) {
-        var error = e;
+        const error = e;
         console.log('Tests are not valid:');
         console.log(error);
       }
