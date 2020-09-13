@@ -30,11 +30,11 @@ const Issue = mongoose.model('Issue', IssueSchema);
 // Create
 const findOrCreateProject = (name, cb) => {
   const newProject = new Project({name: name});
-  Project.find({name: name}, (err, data) => {
+  Project.find({name: name}, (err, projectData) => {
     if (err) {
       cb(err, null);
-    } else if (data) {
-      cb(null, data[0]);
+    } else if (Array.isArray(projectData) && projectData.length) {
+      cb(null, projectData[0]);
     } else {
       newProject.save((err, data) => {
         if (err) {
