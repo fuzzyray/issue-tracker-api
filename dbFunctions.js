@@ -63,7 +63,7 @@ const createIssue = (issue, cb) => {
   */
   issue.created_on = new Date();
   issue.updated_on = issue.created_on;
-  // TODO: Add checking for required fields? We get an error from db, if missing
+  // TODO: Add checking for required fields?
   const newIssue = new Issue(issue);
   newIssue.save((err, data) => {
     if (err) {
@@ -75,6 +75,32 @@ const createIssue = (issue, cb) => {
 };
 
 // Read
+const getProjectIdByName = (name, cb) => {
+  Project.find({name: name}, (err, data) => {
+    if (err) {
+      cb(err, null);
+    } else if (Array.isArray(data) && data.length) {
+      cb(null, data[0]._id);
+    } else {
+      cb({error: 'No data found'}, null);
+    }
+  });
+};
+const queryIssues = (project, cb) => {
+  getProjectIdByName(project, (err, projectId) => {
+    if (err) {
+      cb(err, null);
+    } else {
+      Issue.find({project: projectId}, (err, data) => {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, data);
+        }
+      });
+    }
+  });
+};
 
 // Update
 
@@ -83,3 +109,4 @@ const createIssue = (issue, cb) => {
 exports.connect = connect;
 exports.findOrCreateProject = findOrCreateProject;
 exports.createIssue = createIssue;
+exports.queryIssues = queryIssues;

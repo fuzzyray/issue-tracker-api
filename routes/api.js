@@ -11,6 +11,7 @@
 const expect = require('chai').expect;
 const findOrCreateProject = require('../dbFunctions').findOrCreateProject;
 const createIssue = require('../dbFunctions').createIssue;
+const queryIssues = require('../dbFunctions').queryIssues;
 
 const defaultIssue = {
   '_id': '0',
@@ -21,7 +22,7 @@ const defaultIssue = {
   'created_by': 'System',
   'assigned_to': 'System',
   'open': true,
-  'status_text': 'Bug',
+  'status_text': 'Bug/Error',
 };
 
 const createResult = (data) => {
@@ -45,7 +46,13 @@ module.exports = app => {
       .get((req, res) => {
         const project = req.params.project.toLowerCase();
         console.log(project);
-        res.json([defaultIssue]);
+        queryIssues(project, (err, data) => {
+          if (err) {
+            res.json([defaultIssue]);
+          } else {
+            res.json(data);
+          }
+        });
       })
 
       .post((req, res) => {
