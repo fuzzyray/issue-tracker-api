@@ -113,7 +113,7 @@ const getIssueById = (issueId, cb) => {
 
 // Update
 const updateIssueById = (issueId, update, cb) => {
-  update.update_on = new Date();
+  update.updated_on = new Date();
   Issue.findByIdAndUpdate(issueId, update, {new: true, useFindAndModify: false},
       (err, data) => {
         if (err) {
@@ -125,6 +125,15 @@ const updateIssueById = (issueId, update, cb) => {
 };
 
 // Delete
+const deleteIssueById = (issueId, cb) => {
+  Issue.findByIdAndRemove(issueId, {useFindAndModify: false}, (err, data) => {
+    if (err) {
+      cb(err, null);
+    } else {
+      cb(null, data);
+    }
+  });
+};
 
 exports.connect = connect;
 exports.findOrCreateProject = findOrCreateProject;
@@ -132,3 +141,4 @@ exports.createIssue = createIssue;
 exports.queryIssuesByProject = queryIssuesByProject;
 exports.getIssueById = getIssueById;
 exports.updateIssueById = updateIssueById;
+exports.deleteIssueById = deleteIssueById;

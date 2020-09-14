@@ -14,6 +14,7 @@ const createIssue = require('../dbFunctions').createIssue;
 const queryIssuesByProject = require('../dbFunctions').queryIssuesByProject;
 const getIssueById = require('../dbFunctions').getIssueById;
 const updateIssueById = require('../dbFunctions').updateIssueById;
+const deleteIssueById = require('../dbFunctions').deleteIssueById;
 
 const defaultIssue = {
   _id: '0',
@@ -99,6 +100,7 @@ module.exports = app => {
         } else {
           getIssueById(issueId, (err, data) => {
             if (err) {
+              console.error(err);
               res.json({error: err});
             } else {
               res.json(createResult(data));
@@ -108,10 +110,16 @@ module.exports = app => {
       })
 
       .delete((req, res) => {
-        const project = req.params.project.toLowerCase();
-        console.log(project);
-        console.log(req.body);
-        res.json({error: 'Not implemented'});
+        const issueId = req.body._id;
+        deleteIssueById(issueId, (err, data) => {
+          if (err) {
+            res.send('_id error');
+          } else if (data) {
+            res.send(`deleted ${issueId}`);
+          } else {
+            res.send(`could not delete ${issueId}`)
+          }
+        });
       });
 
 };
