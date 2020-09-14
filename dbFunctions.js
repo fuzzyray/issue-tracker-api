@@ -48,19 +48,6 @@ const findOrCreateProject = (name, cb) => {
 };
 
 const createIssue = (issue, cb) => {
-  /*
-  {
-    project: {type: mongoose.Types.ObjectId, ref: 'Project', required: true},
-    issue_title: {type: String, required: true},
-    issue_text: {type: String, required: true},
-    created_on: {type: Date, required: true},
-    created_by: {type: String, required: true},
-    updated_on: {type: Date, required: true},
-    open: {type: Boolean, default: true, required: true},
-    assigned_to: {type: String},
-    status_text: {type: String},
-  }
-  */
   issue.created_on = new Date();
   issue.updated_on = issue.created_on;
   // TODO: Add checking for required fields?
@@ -85,12 +72,15 @@ const getProjectIdByName = (name, cb) => {
   });
 };
 
-const queryIssuesByProject = (project, cb) => {
+const queryIssuesByProject = (project, queryParams = {}, cb) => {
   getProjectIdByName(project, (err, projectId) => {
     if (err) {
       cb(err, null);
     } else {
-      Issue.find({project: projectId}, (err, data) => {
+      queryParams.project = projectId;
+      let query = Issue.find(queryParams)
+          .sort({created_on: 'descending'})
+          .exec((err, data) => {
         if (err) {
           cb(err, null);
         } else {

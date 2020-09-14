@@ -48,12 +48,42 @@ module.exports = app => {
 
       .get((req, res) => {
         const project = req.params.project.toLowerCase();
-        console.log(req.params);
-        queryIssuesByProject(project, (err, data) => {
+        const queryParams = req.query;
+        // Change the query parameters to the correct types
+        // Do some basic validation
+        if (queryParams.hasOwnProperty('open')) {
+          switch (queryParams.open.toLowerCase()) {
+            case 'true':
+              // noinspection JSValidateTypes
+              queryParams.open = true;
+              break;
+            case 'false':
+              // noinspection JSValidateTypes
+              queryParams.open = false;
+              break;
+            default:
+              delete queryParams.open;
+          }
+        }
+        if (queryParams.hasOwnProperty('created_on')) {
+          // noinspection JSCheckFunctionSignatures
+          queryParams.created_on = new Date(queryParams.created_on)
+          if (queryParams.created_on.toString === "Invalid Date") {
+            delete queryParams.created_on;
+          }
+        }
+        if (queryParams.hasOwnProperty('updated_on')) {
+          // noinspection JSCheckFunctionSignatures
+          queryParams.updated_on = new Date(queryParams.updated_on)
+          if (queryParams.updated_on.toString === "Invalid Date") {
+            delete queryParams.updated_on;
+          }
+        }
+        queryIssuesByProject(project, queryParams, (err, data) => {
           if (err) {
             res.json([defaultIssue]);
           } else {
-            res.json(data);
+            res.json(data.map(d => createResult(d)));
           }
         });
       })
@@ -117,7 +147,7 @@ module.exports = app => {
           } else if (data) {
             res.send(`deleted ${issueId}`);
           } else {
-            res.send(`could not delete ${issueId}`)
+            res.send(`could not delete ${issueId}`);
           }
         });
       });
