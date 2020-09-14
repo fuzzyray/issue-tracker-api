@@ -67,7 +67,11 @@ const getProjectIdByName = (name, cb) => {
     if (err) {
       cb(err, null);
     } else {
-      cb(null, data._id);
+      if (data !== null) {
+        cb(null, data._id);
+      } else {
+        cb(null, null)
+      }
     }
   });
 };

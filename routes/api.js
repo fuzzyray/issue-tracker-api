@@ -19,7 +19,7 @@ const deleteIssueById = require('../dbFunctions').deleteIssueById;
 const defaultIssue = {
   _id: '0',
   issue_title: 'No Issues in Project',
-  issue_text: 'This is the default issue returned, if no issues are found.',
+  issue_text: 'This is the default issue returned, if there is a database error',
   created_on: '1970-01-01T00:00:00.000Z',
   updated_on: '1970-01-01T00:00:00.000Z',
   created_by: 'System',
@@ -67,20 +67,21 @@ module.exports = app => {
         }
         if (queryParams.hasOwnProperty('created_on')) {
           // noinspection JSCheckFunctionSignatures
-          queryParams.created_on = new Date(queryParams.created_on)
-          if (queryParams.created_on.toString === "Invalid Date") {
+          queryParams.created_on = new Date(queryParams.created_on);
+          if (queryParams.created_on.toString === 'Invalid Date') {
             delete queryParams.created_on;
           }
         }
         if (queryParams.hasOwnProperty('updated_on')) {
           // noinspection JSCheckFunctionSignatures
-          queryParams.updated_on = new Date(queryParams.updated_on)
-          if (queryParams.updated_on.toString === "Invalid Date") {
+          queryParams.updated_on = new Date(queryParams.updated_on);
+          if (queryParams.updated_on.toString === 'Invalid Date') {
             delete queryParams.updated_on;
           }
         }
         queryIssuesByProject(project, queryParams, (err, data) => {
           if (err) {
+            console.error(err);
             res.json([defaultIssue]);
           } else {
             res.json(data.map(d => createResult(d)));
@@ -118,10 +119,10 @@ module.exports = app => {
             delete issue[key];
           }
         });
-        //issue.open = true;
         if (Object.keys(issue).length !== 0) {
           updateIssueById(issueId, issue, (err, data) => {
             if (err) {
+              console.log(err);
               res.json({error: err});
             } else {
               res.json(createResult(data));
@@ -151,5 +152,4 @@ module.exports = app => {
           }
         });
       });
-
 };
