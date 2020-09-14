@@ -76,17 +76,16 @@ const createIssue = (issue, cb) => {
 
 // Read
 const getProjectIdByName = (name, cb) => {
-  Project.find({name: name}, (err, data) => {
+  Project.findOne({name: name}, (err, data) => {
     if (err) {
       cb(err, null);
-    } else if (Array.isArray(data) && data.length) {
-      cb(null, data[0]._id);
     } else {
-      cb({error: 'No data found'}, null);
+      cb(null, data._id);
     }
   });
 };
-const queryIssues = (project, cb) => {
+
+const queryIssuesByProject = (project, cb) => {
   getProjectIdByName(project, (err, projectId) => {
     if (err) {
       cb(err, null);
@@ -102,11 +101,34 @@ const queryIssues = (project, cb) => {
   });
 };
 
+const getIssueById = (issueId, cb) => {
+  Issue.findById(issueId, (err, data) => {
+    if (err) {
+      cb(err, null);
+    } else {
+      cb(null, data);
+    }
+  });
+};
+
 // Update
+const updateIssueById = (issueId, update, cb) => {
+  update.update_on = new Date();
+  Issue.findByIdAndUpdate(issueId, update, {new: true, useFindAndModify: false},
+      (err, data) => {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, data);
+        }
+      });
+};
 
 // Delete
 
 exports.connect = connect;
 exports.findOrCreateProject = findOrCreateProject;
 exports.createIssue = createIssue;
-exports.queryIssues = queryIssues;
+exports.queryIssuesByProject = queryIssuesByProject;
+exports.getIssueById = getIssueById;
+exports.updateIssueById = updateIssueById;

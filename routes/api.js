@@ -11,18 +11,20 @@
 const expect = require('chai').expect;
 const findOrCreateProject = require('../dbFunctions').findOrCreateProject;
 const createIssue = require('../dbFunctions').createIssue;
-const queryIssues = require('../dbFunctions').queryIssues;
+const queryIssuesByProject = require('../dbFunctions').queryIssuesByProject;
+const getIssueById = require('../dbFunctions').getIssueById;
+const updateIssueById = require('../dbFunctions').updateIssueById;
 
 const defaultIssue = {
-  '_id': '0',
-  'issue_title': 'No Issues in Project',
-  'issue_text': 'This is the default issue returned, if no issues are found.',
-  'created_on': '1970-01-01T00:00:00.000Z',
-  'updated_on': '1970-01-01T00:00:00.000Z',
-  'created_by': 'System',
-  'assigned_to': 'System',
-  'open': true,
-  'status_text': 'Bug/Error',
+  _id: '0',
+  issue_title: 'No Issues in Project',
+  issue_text: 'This is the default issue returned, if no issues are found.',
+  created_on: '1970-01-01T00:00:00.000Z',
+  updated_on: '1970-01-01T00:00:00.000Z',
+  created_by: 'System',
+  assigned_to: 'System',
+  open: true,
+  status_text: 'Bug/Error',
 };
 
 const createResult = (data) => {
@@ -45,8 +47,8 @@ module.exports = app => {
 
       .get((req, res) => {
         const project = req.params.project.toLowerCase();
-        console.log(project);
-        queryIssues(project, (err, data) => {
+        console.log(req.params);
+        queryIssuesByProject(project, (err, data) => {
           if (err) {
             res.json([defaultIssue]);
           } else {
@@ -77,10 +79,32 @@ module.exports = app => {
       })
 
       .put((req, res) => {
-        const project = req.params.project.toLowerCase();
-        console.log(project);
-        console.log(req.body);
-        res.json({error: 'Not implemented'});
+        const issue = req.body;
+        const issueId = issue._id;
+        delete issue._id;
+        Object.keys(issue).forEach(key => {
+          if (!issue[key]) {
+            delete issue[key];
+          }
+        });
+        //issue.open = true;
+        if (Object.keys(issue).length !== 0) {
+          updateIssueById(issueId, issue, (err, data) => {
+            if (err) {
+              res.json({error: err});
+            } else {
+              res.json(createResult(data));
+            }
+          });
+        } else {
+          getIssueById(issueId, (err, data) => {
+            if (err) {
+              res.json({error: err});
+            } else {
+              res.json(createResult(data));
+            }
+          });
+        }
       })
 
       .delete((req, res) => {
