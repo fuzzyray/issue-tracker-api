@@ -21,8 +21,8 @@ const IssueSchema = new mongoose.Schema({
   created_by: {type: String, required: true},
   updated_on: {type: Date, required: true},
   open: {type: Boolean, default: true, required: true},
-  assigned_to: {type: String},
-  status_text: {type: String},
+  assigned_to: {type: String, default: ''},
+  status_text: {type: String, default: ''},
 });
 
 const Issue = mongoose.model('Issue', IssueSchema);
