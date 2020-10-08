@@ -17,7 +17,9 @@ const app = express();
 
 // Log all requests
 app.use((req, res, next) => {
-  console.log(`${Date.now()}: ${req.method} ${req.path} - ${req.ip}`);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`${Date.now()}: ${req.method} ${req.path} - ${req.ip}`);
+  }
   next();
 });
 
