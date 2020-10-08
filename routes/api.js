@@ -81,7 +81,6 @@ module.exports = app => {
         }
         queryIssuesByProject(project, queryParams, (err, data) => {
           if (err) {
-            console.error(err);
             res.json([defaultIssue]);
           } else {
             res.json(data.map(d => createResult(d)));
@@ -94,14 +93,14 @@ module.exports = app => {
         const issue = req.body;
         findOrCreateProject(project, (err, data) => {
           if (err) {
-            console.error(err);
-            res.json({error: err});
+            //console.error(err);
+            res.status(400).send(err._message)
           } else {
             issue.project = data._id;
             createIssue(issue, (err, data) => {
               if (err) {
-                console.error(err);
-                res.json({error: err});
+                //console.error(err);
+                res.status(400).send(err._message)
               } else {
                 res.json(createResult(data));
               }
@@ -114,12 +113,15 @@ module.exports = app => {
         const issue = req.body;
         const issueId = issue._id;
         delete issue._id;
-        Object.keys(issue).forEach(key => {
-          if (!issue[key]) {
-            delete issue[key];
-          }
-        });
+
         if (Object.keys(issue).length !== 0) {
+          Object.keys(issue).forEach(key => {
+            if (issue[key] === '') {
+              delete issue[key];
+            }
+          });
+        }
+        if (Object.keys(issue).length !== 0 && issueId) {
           updateIssueById(issueId, issue, (err, data) => {
             if (err) {
               console.log(err);
@@ -129,27 +131,25 @@ module.exports = app => {
             }
           });
         } else {
-          getIssueById(issueId, (err, data) => {
-            if (err) {
-              console.error(err);
-              res.json({error: err});
-            } else {
-              res.json(createResult(data));
-            }
-          });
+          res.send("no updated field sent")
         }
       })
 
       .delete((req, res) => {
         const issueId = req.body._id;
-        deleteIssueById(issueId, (err, data) => {
-          if (err) {
-            res.send('_id error');
-          } else if (data) {
-            res.send(`deleted ${issueId}`);
-          } else {
-            res.send(`could not delete ${issueId}`);
-          }
-        });
+        if (issueId) {
+          deleteIssueById(issueId, (err, data) => {
+            if (err) {
+              console.error(err)
+              res.json({error: err});
+            } else if (data) {
+              res.send(`deleted ${issueId}`);
+            } else {
+              res.send(`could not delete ${issueId}`);
+            }
+          });
+        } else {
+          res.send('_id error');
+        }
       });
 };
